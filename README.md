@@ -6,10 +6,11 @@ General information
 SyncZFS is an in .NET Core implemented syncing solution for the ZFS file system.
 Easy to use and reliabilty are the main targets of this project.
 
-Building
+Build
 -----------------------
 You need simply an the .NET Core SDK installed. For Code editing and debugging i would sugggest VS Code with the C# Plugin.
 ```sh
+# git clone https://github.com/pboehm90/synczfs.git
 $ cd synczfs
 $ dotnet build
 ```
