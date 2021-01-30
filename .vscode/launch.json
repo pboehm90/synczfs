@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/release/zsyncd.dll",
+            "program": "${workspaceFolder}/release/synczfs.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
