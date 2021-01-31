@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using synczfs.CommonObjects;
 using synczfs.processhelper;
@@ -7,12 +8,15 @@ namespace synczfs.ZFS
 {
     class ZfsSend
     {
+        CliArguments CliArguments { get; }
         Target Source { get; }
         Target Destination { get; }
-        public ZfsSend(Target source, Target destination)
+        public ZfsSend(CliArguments cliArguments)
         {
-            Source = source;
-            Destination = destination;
+            CliArguments = cliArguments;
+
+            Source = CliArguments.Source;
+            Destination = CliArguments.Destination;
         }
 
         public void Send(Snapshot snapshot, string zfsDestination)
@@ -29,7 +33,8 @@ namespace synczfs.ZFS
 
         private string GetFullCommand(string parentSnap, string childSnap, string zfsDestination)
         {
-            return GetSendCommand(parentSnap, childSnap) + " | " + GetReceiveCommand(zfsDestination);
+            string cmd = AddLimitString();
+            return GetSendCommand(parentSnap, childSnap) + " | " + AddLimitString() + GetReceiveCommand(zfsDestination);
         }
 
         private void Mount(string zfsDestination)
@@ -75,6 +80,30 @@ namespace synczfs.ZFS
                 sb.Append("ssh " + Destination.Host + " ");
             sb.Append("zfs recv -F " + zfsTargetPath);
             return sb.ToString();
+        }
+
+        private string AddLimitString()
+        {
+            string command = "pv";
+            if (!string.IsNullOrWhiteSpace(CliArguments.RateLimitSource) && CommandExists(command))
+            {
+                return command + " -L " + CliArguments.RateLimitSource + " | ";
+            }
+            return string.Empty;
+        }
+
+        private bool CommandExists(string command)
+        {
+            try
+            {
+                SimpleShellProcess.Run(Source, $"command -v {command}");
+                return true;
+            }
+            catch
+            {
+                Console.WriteLine("The command '" + command + "' could not found!!!");
+                return false;
+            }
         }
     }
 }

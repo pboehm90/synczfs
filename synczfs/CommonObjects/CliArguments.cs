@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using synczfs.CLI;
 
 namespace synczfs.CommonObjects
 {
@@ -10,6 +11,7 @@ namespace synczfs.CommonObjects
         public Target Source { get; }
         public Target Destination { get; }
         public bool Recursive => CliFlagList.Contains(ECliFlag.Recursive);
+        public string RateLimitSource { get; }
         private List<ECliFlag> CliFlagList { get; }
         public CliArguments(string[] args)
         {
@@ -19,6 +21,11 @@ namespace synczfs.CommonObjects
             Source = new Target(args[1]);
             Destination = new Target(args[2]);
             CliFlagList = CliFlags.ParseFlags(args);
+
+            CliFactory fac = new CliFactory(args);
+            var dict = fac.KeyValue;
+
+            RateLimitSource = GetRateLimit(fac);
         }
 
         ///
@@ -42,6 +49,36 @@ namespace synczfs.CommonObjects
             if (!resultStr.Equals(input))
                 Console.WriteLine($"*** Warning * The Job name was changed from '{input}' to '{resultStr}' because it was invalid.");
             return sb.ToString();
+        }
+
+        private string GetRateLimit(CliFactory factory)
+        {
+            string key = "-sourcelimit";
+
+            try
+            {
+                if (factory.KeyValue.ContainsKey(key))
+                {
+                    string limitValue = factory.KeyValue[key].ToUpperInvariant().Trim();
+                    if (!string.IsNullOrWhiteSpace(limitValue))
+                    {
+                        string strNum = limitValue.Substring(0, limitValue.Length - 1);
+                        char sizeUnit = limitValue[limitValue.Length - 1];
+
+                        if (sizeUnit == 'K' || sizeUnit == 'M' || sizeUnit == 'G' || sizeUnit == 'T')
+                        {
+                            int.Parse(strNum);
+                            return limitValue;
+                        }
+                    }
+                }
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("Invalid source Limit argument!");
+            }
+
+            return null;
         }
     }
 }

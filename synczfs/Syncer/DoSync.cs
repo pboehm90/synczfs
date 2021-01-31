@@ -117,13 +117,13 @@ namespace synczfs.Syncer
 
         private void SendIncremental(string parentSnap, string childSnap, string destination)
         {
-            ZfsSend send = new ZfsSend(CliArguments.Source, CliArguments.Destination);
+            ZfsSend send = new ZfsSend(CliArguments);
             send.SendIncremental(parentSnap, childSnap, destination);
         }
 
         private void SendOldestSnapshotInitial(Target target, Dataset sourceDataset, string destination)
         {
-            ZfsSend send = new ZfsSend(CliArguments.Source, CliArguments.Destination);
+            ZfsSend send = new ZfsSend(CliArguments);
 
             Snapshot firstSnap = sourceDataset.GetSnapshotsScoped(CliArguments.JobName)[0];
             send.Send(firstSnap, destination);
