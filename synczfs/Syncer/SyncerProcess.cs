@@ -32,9 +32,11 @@ namespace synczfs.Syncer
         public void Run()
         {
             // Erste Ebende der Datasets Snapshotten und syncen --> Danach iterativ
+            string mutexHash = ToolBox.HashStringSha256(("synczfs_" + Cli.JobName).Trim().ToLowerInvariant());
+            string globalMutexString = @"Global\" + mutexHash;
             try
             {
-                using (Mutex mtx = new Mutex(false, "Global\\synczfs_" + Cli.JobName))
+                using (Mutex mtx = new Mutex(false, globalMutexString))
                 {
                     if (mtx.WaitOne(1000))
                     {

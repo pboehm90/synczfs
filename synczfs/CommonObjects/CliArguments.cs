@@ -17,7 +17,7 @@ namespace synczfs.CommonObjects
         {
             if (args.Length < 3)
                 throw new Exception("Too less arguments to run! Please have a look at the readme in the repository!");
-            JobName = FilterName(args[0]);
+            JobName = FilterName(args[0].Trim().ToLowerInvariant());
             Source = new Target(args[1]);
             Destination = new Target(args[2]);
             CliFlagList = CliFlags.ParseFlags(args);
