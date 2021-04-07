@@ -45,9 +45,24 @@ namespace synczfs.ZFS.Objects
             Snapshots.Add(new Snapshot(zfsListRow, this));
         }
 
-        public List<Snapshot> GetSnapshotsScoped(string jobName)
+        public List<Snapshot> GetSnapshotsScoped(string jobName, bool ignoreManualSnapshots)
         {
-            return Snapshots.Where(x => !x.IsZsyncdSnapshot || x.JobName.Equals(jobName)).ToList();
+            IEnumerable<Snapshot> snaps = Snapshots.Where(x => !x.IsZsyncdSnapshot || x.JobName.Equals(jobName));
+            List<Snapshot> result = new List<Snapshot>();
+            foreach (Snapshot snap in Snapshots)
+            {
+                if (snap.IsZsyncdSnapshot)
+                {
+                    if (snap.JobName.Equals(jobName))
+                        result.Add(snap);
+                }
+                else if (!ignoreManualSnapshots)
+                {
+                    result.Add(snap);
+                }
+
+            }
+            return result;
         }
 
         public override string ToString()

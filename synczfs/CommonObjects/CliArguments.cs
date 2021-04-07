@@ -13,6 +13,8 @@ namespace synczfs.CommonObjects
         public bool Recursive => CliFlagList.Contains(ECliFlag.Recursive);
         public string RateLimitSource { get; }
         private List<ECliFlag> CliFlagList { get; }
+        // Ignores all non-zsyncd snapshots e.g. manual created ones
+        public bool AutoSnapOnly => CliFlagList.Contains(ECliFlag.AutoSnapOnly);
         public CliArguments(string[] args)
         {
             if (args.Length < 3)

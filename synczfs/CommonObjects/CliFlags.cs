@@ -7,7 +7,8 @@ namespace synczfs.CommonObjects
         static Dictionary<string, ECliFlag> FlagsDict = new Dictionary<string, ECliFlag> 
             { 
                 ["-r"] = ECliFlag.Recursive,
-                ["-onlychilds"] = ECliFlag.ChildsOnly
+                ["-onlychilds"] = ECliFlag.ChildsOnly,
+                ["-autosnaponly"] = ECliFlag.AutoSnapOnly
             };
         
         public static List<ECliFlag> ParseFlags(string[] args)

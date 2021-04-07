@@ -62,14 +62,14 @@ namespace synczfs.Syncer
                 SendOldestSnapshotInitial(CliArguments.Source, sourceDataset, destination);
                 destinationDataset = GetDestinationDatasetByPath(destination);
 
-                sourceSnapBeginIndex = GetCommonSnapshot(sourceDataset, destinationDataset, false);
+                sourceSnapBeginIndex = GetCommonSnapshot(sourceDataset, destinationDataset, CliArguments.AutoSnapOnly);
             }
             else
             {
                 sourceSnapBeginIndex = GetCommonSnapshot(sourceDataset, destinationDataset, true);
             }
             // Nur die Snapshots dieses Jobs oder manuell erstellte interessieren!
-            List<Snapshot> scopedList = sourceDataset.GetSnapshotsScoped(CliArguments.JobName);
+            List<Snapshot> scopedList = sourceDataset.GetSnapshotsScoped(CliArguments.JobName, CliArguments.AutoSnapOnly);
 
             Snapshot lastSyncedZsyncSnap = null;
             for (int i = sourceSnapBeginIndex; i < scopedList.Count; i++)
@@ -125,7 +125,7 @@ namespace synczfs.Syncer
         {
             ZfsSend send = new ZfsSend(CliArguments);
 
-            Snapshot firstSnap = sourceDataset.GetSnapshotsScoped(CliArguments.JobName)[0];
+            Snapshot firstSnap = sourceDataset.GetSnapshotsScoped(CliArguments.JobName, CliArguments.AutoSnapOnly)[0];
             send.Send(firstSnap, destination);
         }
 
@@ -134,8 +134,8 @@ namespace synczfs.Syncer
             bool doBreak = false;
             int commonSnapIndex = -1;
 
-            List<Snapshot> sourceList = sourceDataset.GetSnapshotsScoped(CliArguments.JobName);
-            List<Snapshot> destinationList = destinationDataset.GetSnapshotsScoped(CliArguments.JobName);
+            List<Snapshot> sourceList = sourceDataset.GetSnapshotsScoped(CliArguments.JobName, CliArguments.AutoSnapOnly);
+            List<Snapshot> destinationList = destinationDataset.GetSnapshotsScoped(CliArguments.JobName, CliArguments.AutoSnapOnly);
 
             Snapshot lastCommonDestinationSnap = null;
             for (int i = destinationList.Count - 1; i >= 0; i--)
@@ -176,7 +176,7 @@ namespace synczfs.Syncer
 
         private void CleanUp(Target target, Snapshot lastSyncedZdyncdSnap, Dataset dsToClean)
         {
-            List<Snapshot> sourceList = dsToClean.GetSnapshotsScoped(CliArguments.JobName);
+            List<Snapshot> sourceList = dsToClean.GetSnapshotsScoped(CliArguments.JobName, CliArguments.AutoSnapOnly);
 
             bool canClean = false;
             for (int i = sourceList.Count - 1; i >= 0; i--)
@@ -200,7 +200,7 @@ namespace synczfs.Syncer
 
             Dataset updatedDataset = ReaderSource.GetUpdatedDataset(SourceDataset);
 
-            foreach (Snapshot snap in updatedDataset.GetSnapshotsScoped(CliArguments.JobName))
+            foreach (Snapshot snap in updatedDataset.GetSnapshotsScoped(CliArguments.JobName, CliArguments.AutoSnapOnly))
             {
                 if (snap.Name.Equals(snapName))
                 {
