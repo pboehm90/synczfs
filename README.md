@@ -59,8 +59,17 @@ Command line options
 + Parameter 3 - destination
   like Parameter 2
   
-+ -r
++ Recursive Sync
+  ```sh
+  -r
+  ```
  	the root-source dataset and the childs will be recursively replicated
+  
++ Sync Only Autosnaps
+  ```sh
+  --autosnaponly
+  ```
+  If this Flag is enabled then all other snapshots except the synczfs snaps are bein ignored
 
 Contributing
 -----------------------
