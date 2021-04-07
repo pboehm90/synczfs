@@ -109,7 +109,7 @@ namespace synczfs.Syncer
             catch (ProcessException pex)
             {
                 // Tritt auf wenn das Ziel Dataset noch nicht existiert. Wird ja beim sync angelegt!
-                Logging.GetInstance().Log("Dataset Informationen des Ziels konnten nicht gelesen werden. Zieldataset müsste nicht existieren." + Environment.NewLine + pex.ToString());
+                Logging.GetInstance().Log("Dataset information of the destination could not be read. Target dataset should not exist." + Environment.NewLine + pex.ToString());
             }
             
             return null;
