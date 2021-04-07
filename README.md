@@ -61,6 +61,9 @@ Command line options
   
 + -r
  	the root-source dataset and the childs will be recursively replicated
+  
++ --autosnaponly
+  If this Flag is enabled then all other snapshots except the synczfs snaps are bein ignored
 
 Contributing
 -----------------------
