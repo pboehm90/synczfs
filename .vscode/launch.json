@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/release/synczfs.dll",
-            "args": [ "dev", "tank/vm", "root@127.0.0.1://tank_slave/vm", "-r", "-sourceLimit", "1M", "-xAutoSnapOnly"],
+            "args": [ "dev", "tank/vm", "root@127.0.0.1:22://tank_slave/vm", "-r", "-sourceLimit", "1M", "-xAutoSnapOnly"],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "stopAtEntry": false

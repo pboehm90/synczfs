@@ -19,7 +19,7 @@ namespace synczfs.processhelper
         private SimpleShellProcess(Target target, string cmd)
         {
             if (target != null && target.UseSsh)
-                cmd = $"ssh {target.Username}@{target.Host} '{cmd}'";
+                cmd = $"ssh '{target.Username}@{target.Host}' -p '{target.SshPort}' '{cmd}'";
             
             var escapedArgs = cmd.Replace("\"", "\\\"");
 

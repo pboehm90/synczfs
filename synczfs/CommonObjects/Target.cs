@@ -7,6 +7,7 @@ namespace synczfs.CommonObjects
         public string Username { get; private set; }
         public string Host { get; private set; }
         public string ZfsPath { get; private set; }
+        public ushort SshPort {get; private set;} = 22;
         public Target(string target)
         {
             TargetString = target;
@@ -23,13 +24,21 @@ namespace synczfs.CommonObjects
                 string[] splitHost = splitUser[1].Split("://", System.StringSplitOptions.None);
                 if (splitHost.Length == 2)
                 {
-                    Host = splitHost[0];
+                    ParseHost(splitHost[0]);
                     ZfsPath = splitHost[1];
                     UseSsh = true;
                     return true;
                 }
             }
             return false;
+        }
+
+        private void ParseHost(string hostString)
+        {
+            string[] split = hostString.Split(':');
+            Host = split[0];
+            if (split.Length == 2)
+                SshPort = ushort.Parse(split[1]);
         }
     }
 }

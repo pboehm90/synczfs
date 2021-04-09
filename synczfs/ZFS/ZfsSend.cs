@@ -77,7 +77,7 @@ namespace synczfs.ZFS
         {
             StringBuilder sb = new StringBuilder();
             if (Destination.UseSsh)
-                sb.Append("ssh " + Destination.Host + " ");
+                sb.Append($"ssh {Destination.Host} -p {Destination.SshPort} ");
             sb.Append("zfs recv -F " + zfsTargetPath);
             return sb.ToString();
         }
