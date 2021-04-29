@@ -21,13 +21,13 @@ namespace synczfs.ZFS
 
         public void Send(Snapshot snapshot, string zfsDestination)
         {
-            SimpleShellProcess.Run(Source, GetFullCommand(snapshot.SnapshotPath, null, zfsDestination));
+            Source.Shell.Run(GetFullCommand(snapshot.SnapshotPath, null, zfsDestination));
             Mount(zfsDestination);
         }
 
         public void SendIncremental(string parentSnap, string childSnap, string zfsDestination)
         {
-            SimpleShellProcess.Run(Source, GetFullCommand(parentSnap, childSnap, zfsDestination));
+            Source.Shell.Run(GetFullCommand(parentSnap, childSnap, zfsDestination));
             Mount(zfsDestination);
         }
 
@@ -41,7 +41,7 @@ namespace synczfs.ZFS
         {
             try
             {
-                var df = SimpleShellProcess.Run(Destination, "df | grep " + zfsDestination).StandardOutput;
+                Destination.Shell.Run("df | grep " + zfsDestination);
             }
             catch (ProcessException pex)
             {
@@ -49,7 +49,7 @@ namespace synczfs.ZFS
                 {
                     try 
                     {
-                        SimpleShellProcess.Run(Destination, "zfs mount " + zfsDestination);
+                        Destination.Shell.Run("zfs mount " + zfsDestination);
                     }
                     catch (ProcessException) { /* Fire and forget */ }
                 }
@@ -96,7 +96,7 @@ namespace synczfs.ZFS
         {
             try
             {
-                SimpleShellProcess.Run(Source, $"command -v {command}");
+                Source.Shell.Run($"command -v {command}");
                 return true;
             }
             catch

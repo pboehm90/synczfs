@@ -25,7 +25,7 @@ namespace x_test
         public void TestShellError()
         {
             Target target = new Target("root@localhost");
-            SimpleShellProcess proc = SimpleShellProcess.Run(target, "df xxx");
+            var result = target.Shell.Run("df xxx");
         }
 
         [Test]

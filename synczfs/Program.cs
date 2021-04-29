@@ -12,7 +12,17 @@ namespace synczfs
         static void Main(string[] args)
         {
             CliArguments myArgs = new CliArguments(args);
-            SyncerProcess.CreateInstance(myArgs).Run();
+            try
+            {
+                SyncerProcess.CreateInstance(myArgs).Run();    
+            }
+            finally
+            {
+                
+                myArgs.Source.Shell.Dispose();
+                myArgs.Destination.Shell.Dispose();
+            }
+            
         }
     }
 }

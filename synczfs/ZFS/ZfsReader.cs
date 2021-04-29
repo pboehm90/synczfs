@@ -48,16 +48,16 @@ namespace synczfs.ZFS
             string command = "zfs list -p -t all -r " + Path;
             
             //var proc = ShellProcess.RunNew(Target, command).WaitForExit();
-            var proc = SimpleShellProcess.Run(Target, command);
+            ProcessResult result = Target.Shell.Run(command);
 
-            if (proc.StandardOutputLines.Length == 1)
+            if (result.StandardOutputLines.Length == 1)
                 throw new System.Exception("The path could not found!");
             
             List<ZfsListRow> zfsPaths = new List<ZfsListRow>();
 
-            for (int i = 1; i < proc.StandardOutputLines.Length; i++)
+            for (int i = 1; i < result.StandardOutputLines.Length; i++)
             {
-                string line = proc.StandardOutputLines[i];
+                string line = result.StandardOutputLines[i];
                 new ZfsListRow(line);
                 string zfsName = line.Split(' ', System.StringSplitOptions.RemoveEmptyEntries)[0];
 

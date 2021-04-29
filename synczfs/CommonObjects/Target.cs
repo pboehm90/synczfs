@@ -1,3 +1,5 @@
+using synczfs.processhelper;
+
 namespace synczfs.CommonObjects
 {
     public class Target
@@ -8,11 +10,22 @@ namespace synczfs.CommonObjects
         public string Host { get; private set; }
         public string ZfsPath { get; private set; }
         public ushort SshPort {get; private set;} = 22;
+        public SimpleProcessBase Shell { get; private set; }
         public Target(string target)
         {
             TargetString = target;
             if (!ParseSsh())
                 ZfsPath = target;
+
+            ObtainShell();
+        }
+
+        private void ObtainShell()
+        {
+            if (UseSsh)
+                Shell = new SimpleSshConnection(this);
+            else
+                Shell = new SimpleShellProcess(this);
         }
 
         private bool ParseSsh()

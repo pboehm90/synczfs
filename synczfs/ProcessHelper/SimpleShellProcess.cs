@@ -1,29 +1,23 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using synczfs.CommonObjects;
 
 namespace synczfs.processhelper
 {
-    public class SimpleShellProcess
+    public class SimpleShellProcess : SimpleProcessBase
     {
-        string Command { get; }
-        public string StandardOutput { get; }
-        public string[] StandardOutputLines { get; private set; }
-
-        public static SimpleShellProcess Run(Target target, string cmd)
+        public SimpleShellProcess(Target target) : base(target)
         {
-            return new SimpleShellProcess(target, cmd);
         }
 
-        private SimpleShellProcess(Target target, string cmd)
+        internal override ProcessResult ExecInternal(string command)
         {
-            if (target != null && target.UseSsh)
-                cmd = $"ssh '{target.Username}@{target.Host}' -p '{target.SshPort}' '{cmd}'";
-            
-            var escapedArgs = cmd.Replace("\"", "\\\"");
+            var escapedArgs = command.Replace("\"", "\\\"");
 
-            var process = new Process()
+            string stdOut = null;
+            string stdErr = null;
+
+            Process process = new Process()
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -41,25 +35,18 @@ namespace synczfs.processhelper
             try
             {
                 process.Start();
-                Logging.GetInstance().Log("Prozess gestartet. " + fullExecString); 
                 process.WaitForExit();
-                Logging.GetInstance().Log("Prozess beendet! " + fullExecString); 
 
                 if (process.ExitCode == 0)
                 {
-                    string stdOut = process.StandardOutput.ReadToEnd();
-                    // Zeilenumbruch ganz am Ende entfernen, macht das parsen leichter!
-                    if (stdOut.EndsWith(Environment.NewLine))
-                        stdOut = stdOut.Substring(0, stdOut.Length - Environment.NewLine.Length);
-                    
-                    StandardOutput = stdOut;
-                    StandardOutputLines = StandardOutput.Split(Environment.NewLine, StringSplitOptions.None);
+                    stdOut = process.StandardOutput.ReadToEnd();
                 }
                 else
                 {
-                    string stdErr = process.StandardError.ReadToEnd();
-                    throw new ProcessException(process.ExitCode, fullExecString, stdErr);
+                    stdErr = process.StandardError.ReadToEnd();
                 }
+
+                return new ProcessResult(process.ExitCode, stdOut, stdErr);
             }
             finally
             {

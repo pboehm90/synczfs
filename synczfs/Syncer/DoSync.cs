@@ -183,7 +183,7 @@ namespace synczfs.Syncer
             {
                 if (canClean && sourceList[i].IsZsyncdSnapshot)
                 {
-                    SimpleShellProcess.Run(target, "zfs destroy " + sourceList[i].SnapshotPath);
+                    target.Shell.Run("zfs destroy " + sourceList[i].SnapshotPath);
                 }
                 else if (!canClean && sourceList[i].Name.Equals(lastSyncedZdyncdSnap.Name))
                     canClean = true;
@@ -196,7 +196,7 @@ namespace synczfs.Syncer
 
             string command = "zfs snapshot " + $"{SourceDataset.Path}@{snapName}";
 
-            SimpleShellProcess.Run(target, command);
+            target.Shell.Run(command);
 
             Dataset updatedDataset = ReaderSource.GetUpdatedDataset(SourceDataset);
 
@@ -214,7 +214,7 @@ namespace synczfs.Syncer
         private void DestroySnapshot(Target target, Snapshot snapshot)
         {
             string command = "zfs destroy " + snapshot.SnapshotPath;
-            SimpleShellProcess.Run(target, command);
+            target.Shell.Run(command);
         }
     }
 }
