@@ -49,5 +49,40 @@ namespace x_test
                 TestSyncingOnTestVM();
             }
         }
+
+        [Test]
+        public void NewParse()
+        {
+            string testStr = "root:fooooo@127.0.0.1://tank_slave/vm";
+
+            string user = null;
+            string pass = null;
+            int endPos = Target.ParseOut(testStr, 0, null, new string[] { "@", ":" }, false, out user);
+            try
+            {
+                endPos = Target.ParseOut(testStr, endPos, new string[] { ":" }, new string[] { "@" }, true, out pass);
+            }
+            catch (System.Exception)
+            {
+                // No Password defined!
+            }
+            string address = null;
+            endPos = Target.ParseOut(testStr, endPos, new string[] { "@" }, new string[] { ":", "://" }, false, out address);
+            
+            string port = null;
+            try
+            {
+                endPos = Target.ParseOut(testStr, endPos, new string[] { ":" }, new string[] { "://" }, false, out port);
+            }
+            catch (System.Exception)
+            {
+                // Kein Port
+            }
+            
+            
+
+            string zfsPath = null;
+            endPos = Target.ParseOut(testStr, endPos, new string[] { "://" }, null, false, out zfsPath);
+        }
     }
 }

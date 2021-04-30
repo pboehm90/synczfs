@@ -16,7 +16,12 @@ namespace synczfs.processhelper
 
         private void InitializeSshConnection()
         {
-            ConnectionInfo ci = new ConnectionInfo(CurrentTarget.Host, CurrentTarget.Username, new AuthenticationMethod[] { new PasswordAuthenticationMethod(CurrentTarget.Username, "linux")});
+            AuthenticationMethod[] authenticationMethods = new AuthenticationMethod[1];
+            //authenticationMethods[0] = new PrivateKeyAuthenticationMethod(CurrentTarget.Username, new PrivateKeyFile[] { new PrivateKeyFile("/root/.ssh/id_rsa") });
+            authenticationMethods[0] = new PasswordAuthenticationMethod(CurrentTarget.Username, CurrentTarget.Password);
+            
+            ConnectionInfo ci = new ConnectionInfo(CurrentTarget.Host, CurrentTarget.Username, authenticationMethods);
+
 
             Client = new SshClient(ci);
             Client.Connect();
