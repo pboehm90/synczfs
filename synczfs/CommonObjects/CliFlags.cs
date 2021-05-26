@@ -8,7 +8,9 @@ namespace synczfs.CommonObjects
             { 
                 ["-r"] = ECliFlag.Recursive,
                 ["-onlychilds"] = ECliFlag.ChildsOnly,
-                ["-autosnaponly"] = ECliFlag.AutoSnapOnly
+                ["-autosnaponly"] = ECliFlag.AutoSnapOnly,
+                ["-p"] = ECliFlag.SendProps,
+                ["--props"] = ECliFlag.SendProps
             };
         
         public static List<ECliFlag> ParseFlags(string[] args)

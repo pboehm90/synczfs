@@ -21,20 +21,20 @@ namespace synczfs.ZFS
 
         public void Send(Snapshot snapshot, string zfsDestination)
         {
-            Source.Shell.Run(GetFullCommand(snapshot.SnapshotPath, null, zfsDestination));
+            Source.Shell.Run(GetFullCommand(snapshot.SnapshotPath, null, zfsDestination, CliArguments.SendProps));
             Mount(zfsDestination);
         }
 
         public void SendIncremental(string parentSnap, string childSnap, string zfsDestination)
         {
-            Source.Shell.Run(GetFullCommand(parentSnap, childSnap, zfsDestination));
+            Source.Shell.Run(GetFullCommand(parentSnap, childSnap, zfsDestination, CliArguments.SendProps));
             Mount(zfsDestination);
         }
 
-        private string GetFullCommand(string parentSnap, string childSnap, string zfsDestination)
+        private string GetFullCommand(string parentSnap, string childSnap, string zfsDestination, bool sendProps)
         {
             string cmd = AddLimitString();
-            return GetSendCommand(parentSnap, childSnap) + " | " + AddLimitString() + GetReceiveCommand(zfsDestination);
+            return GetSendCommand(parentSnap, childSnap, sendProps) + " | " + AddLimitString() + GetReceiveCommand(zfsDestination);
         }
 
         private void Mount(string zfsDestination)
@@ -58,12 +58,15 @@ namespace synczfs.ZFS
             }
         }
 
-        private string GetSendCommand(string parentSnap, string childSnap)
+        private string GetSendCommand(string parentSnap, string childSnap, bool sendProps)
         {
             StringBuilder sb = new StringBuilder("zfs send ");
             
+            // Only for the initial send its possible to send the source properties to target
             if (childSnap != null)
                 sb.Append(" -i ");
+            else if (sendProps)
+                sb.Append(" --props ");
 
             sb.Append(parentSnap);
 

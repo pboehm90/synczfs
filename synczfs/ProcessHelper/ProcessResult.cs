@@ -8,7 +8,7 @@ namespace synczfs.processhelper
     public class ProcessResult
     {
         public int ReturnCode { get; }
-        public string[] StandardOutputLines { get; }
+        public string[] StandardOutputLines { get; } = new string[0];
         public string StdErr { get; }
         public bool OK => string.IsNullOrWhiteSpace(StdErr);
 
@@ -16,9 +16,12 @@ namespace synczfs.processhelper
         {
             ReturnCode = returnCode;
 
-            string[] lines = stdOut.Split(Environment.NewLine);
-            StandardOutputLines = new string[lines.Length - 1];
-            Array.Copy(lines, StandardOutputLines, lines.Length - 1);
+            if (!string.IsNullOrWhiteSpace(stdOut))
+            {
+                string[] lines = stdOut.Split(Environment.NewLine);
+                StandardOutputLines = new string[lines.Length - 1];
+                Array.Copy(lines, StandardOutputLines, lines.Length - 1);
+            }
             
             StdErr = stdErr;
         }
