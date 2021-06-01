@@ -19,31 +19,17 @@ namespace synczfs.CommonObjects
             TargetString = target;
 
             UseSsh = ParseSSH();
-            if (UseSsh)
+            if (UseSsh && Password != null)
+            {
+                // Using SSH.NET Library
                 Shell = new SimpleSshConnection(this);
+            }
             else
             {
+                // If Password not specified and SSH is used so SSH is done by the shell command
                 Shell = new SimpleShellProcess(this);
             }
         }
-
-        /*private bool ParseSsh()
-        {
-            string[] splitUser = TargetString.Split('@');
-            if (splitUser.Length == 2)
-            {
-                Username = splitUser[0];
-                string[] splitHost = splitUser[1].Split("://", System.StringSplitOptions.None);
-                if (splitHost.Length == 2)
-                {
-                    ParseHost(splitHost[0]);
-                    ZfsPath = splitHost[1];
-                    UseSsh = true;
-                    return true;
-                }
-            }
-            return false;
-        }*/
 
         private bool ParseSSH()
         {
@@ -82,7 +68,7 @@ namespace synczfs.CommonObjects
                 Host = host;
                 ZfsPath = zfsPath;
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
                 ZfsPath = TargetString;
             }
