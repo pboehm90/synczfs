@@ -192,5 +192,13 @@ namespace synczfs.CommonObjects
             if (split.Length == 2)
                 SshPort = ushort.Parse(split[1]);
         }
+
+        public string GetLogString()
+        {
+            if (UseSsh)
+                return "ssh@" + Host;
+            else
+                return "localhost";
+        }
     }
 }

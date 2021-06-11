@@ -16,5 +16,11 @@ namespace synczfs.CommonObjects
                 return BitConverter.ToString(hash).Replace("-", String.Empty);
             }
         }
+
+        public const string keyExitCode = "exitCode";
+        public static void AddExitCode(Exception ex, int exitCode)
+        {
+            ex.Data[keyExitCode] = exitCode;
+        }
     }
 }

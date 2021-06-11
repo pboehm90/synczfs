@@ -23,6 +23,7 @@ namespace synczfs.Syncer
 
         private SyncerProcess(CliArguments cliArguments)
         {
+            Globals.InitLog(cliArguments.JobName);
             snapshotUnique = Guid.NewGuid().ToString("N").ToLowerInvariant().Substring(0, 6);
 
             Cli = cliArguments;
@@ -33,36 +34,25 @@ namespace synczfs.Syncer
         {
             // Erste Ebende der Datasets Snapshotten und syncen --> Danach iterativ
             string mutexHash = ToolBox.HashStringSha256(("synczfs_" + Cli.JobName).Trim().ToLowerInvariant());
-            string globalMutexString = @"Global\" + mutexHash;
-            try
+            string globalMutexString = "Global\\" + mutexHash;
+            
+            using (Mutex mtx = new Mutex(false, globalMutexString))
             {
-                using (Mutex mtx = new Mutex(false, globalMutexString))
+                if (mtx.WaitOne(1000))
                 {
-                    if (mtx.WaitOne(1000))
+                    Globals.LogInstance.Log("Got Mutex!");
+                    try
                     {
-                        Logging.GetInstance().Log("Mutex erhalten!");
-                        try
-                        {
-                            DoSync();
-                        }
-                        finally
-                        {
-                            mtx.ReleaseMutex();
-                            Logging.GetInstance().Log("Mutex released!");
-                        }
+                        DoSync();
                     }
-                    else
-                        Console.WriteLine($"Job '{Cli.JobName}' is already running. Cancelling...");
+                    finally
+                    {
+                        mtx.ReleaseMutex();
+                        Globals.LogInstance.Log("Mutex released!");
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                FlushException(ex);
-                throw;
-            }
-            finally
-            {
-                Logging.GetInstance().Dispose();
+                else
+                    Console.WriteLine($"Job '{Cli.JobName}' is already running. Cancelling...");
             }
         }
 
@@ -95,20 +85,8 @@ namespace synczfs.Syncer
             }
             catch (DestinationModifiedException modifiedEx)
             {
-                FlushException(modifiedEx);
+                Globals.LogInstance.Log(modifiedEx);
             }
-        }
-
-        private void FlushException(Exception ex)
-        {
-            int exitCode = 99; // Generic fatal failure!
-
-            Logging.GetInstance().Log(ex.ToString());
-            Console.Error.WriteLine(ex.ToString());
-            if (ex is IHasExitCode)
-                exitCode = ((IHasExitCode)ex).GetExitCode();
-            System.Environment.ExitCode = exitCode;
-            Logging.GetInstance().FlushToFile(Cli.JobName);
         }
     }
 }

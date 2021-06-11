@@ -33,7 +33,7 @@ namespace synczfs.ZFS
             List<ZfsListRow> list = List();
             Datasets = ReadDatasets(list);
 
-            Logging.GetInstance().Log($"Dataset informationen aus dem Target {Target.ZfsPath} erfolgreich gelesen!");
+            Globals.LogInstance.Log($"[info] The dataset information has been read successfully! {Target.ZfsPath}");
         }
 
         public Dataset GetUpdatedDataset(Dataset oldDs)
@@ -47,11 +47,10 @@ namespace synczfs.ZFS
         {
             string command = "zfs list -p -t all -r " + Path;
             
-            //var proc = ShellProcess.RunNew(Target, command).WaitForExit();
             ProcessResult result = Target.Shell.Run(command);
 
             if (result.StandardOutputLines.Length == 1)
-                throw new System.Exception("The path could not found!");
+                throw new System.Exception("[error] The path could not found!");
             
             List<ZfsListRow> zfsPaths = new List<ZfsListRow>();
 
@@ -86,7 +85,7 @@ namespace synczfs.ZFS
             for (int i = 0; i < lines.Count; i++)
             {
                 if (lines[i].IsPool)
-                    continue; // Is nur Poolname, kein Dataset
+                    continue; // Is only the pool, no dataset
 
                 string[] split = lines[i].Name.Split('/', System.StringSplitOptions.RemoveEmptyEntries);
 
@@ -102,7 +101,7 @@ namespace synczfs.ZFS
                     current = new Dataset(lines[i].Name);
                 }
 
-                // Letzer Loop
+                // last loop
                 if (i + 1 == lines.Count)
                     datasets.Add(current);
             }

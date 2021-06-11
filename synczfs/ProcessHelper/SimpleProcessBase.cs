@@ -17,11 +17,11 @@ namespace synczfs.processhelper
         {
             lock (RunLock)
             {
-                Logging.GetInstance().Log("Start process! " + command);
+                Globals.LogInstance.Log("[" + CurrentTarget.GetLogString() + "] Start process! " + command);
                 ProcessResult result = ExecInternal(command);
                 if (!result.OK)
                     throw new ProcessException(result.ReturnCode, command, result.StdErr); 
-                Logging.GetInstance().Log("End process! " + command);
+                Globals.LogInstance.Log("[" + CurrentTarget.GetLogString() + "] End process! " + command);
                 return result;
             }
         }
